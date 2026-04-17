@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "@/components/SEO";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
@@ -51,6 +52,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 export default function FAQ() {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title={"FAQ — Common Questions | Ramptium"} description={"Answers about Ramptium: how it differs from traditional RPC providers, security model, scalability, supported chains, and pricing."} keywords={"ramptium FAQ, web3 infrastructure questions, RPC provider comparison"} />
       <Navbar />
       <section className="pt-32 pb-16">
         <div className="container">

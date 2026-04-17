@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "@/components/SEO";
 import { motion } from "framer-motion";
 import {
   Activity, Key, BarChart3, Globe, Settings, Copy, Eye, EyeOff,
@@ -82,6 +83,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title={"Dashboard — API Keys, Usage & Network Status | Ramptium"} description={"Manage API keys, monitor request volume and latency, inspect real-time logs, and track network health across every supported chain."} keywords={"web3 API dashboard, RPC usage monitoring, API key management"} />
       <Navbar />
       <div className="pt-20">
         <div className="container py-8">

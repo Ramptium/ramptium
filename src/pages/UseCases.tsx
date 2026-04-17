@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
 import { Building2, Wallet, BarChart3, Code } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -36,6 +37,7 @@ const cases = [
 export default function UseCases() {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title={"Use Cases — DeFi, Wallets, Exchanges, AI | Ramptium"} description={"How DeFi protocols, wallets, exchanges, and on-chain AI systems use Ramptium for reliable multi-chain access and liquidity routing at scale."} keywords={"DeFi infrastructure, wallet RPC, exchange infrastructure, on-chain AI"} />
       <Navbar />
       <section className="pt-32 pb-16">
         <div className="container">
