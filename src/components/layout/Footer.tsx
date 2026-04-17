@@ -24,8 +24,8 @@ const columns = [
     title: "Company",
     links: [
       { label: "About", href: "/" },
-      { label: "Blog", href: "/" },
-      { label: "Careers", href: "/" },
+      { label: "Pricing", href: "/pricing" },
+      { label: "FAQ", href: "/faq" },
       { label: "Contact", href: "/" },
     ],
   },

@@ -68,21 +68,21 @@ export default function Infrastructure() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="space-y-4">
             {layers.map((layer, i) => (
               <motion.div key={layer.title} variants={fade} className="terminal-border p-6 md:p-8 hover:border-primary/30 transition-colors">
-                <div className="flex flex-col md:flex-row gap-6">
+                <div className="flex flex-col md:flex-row gap-6 md:items-center">
                   <div className="flex items-start gap-4 md:w-1/3">
-                    <div className="p-2 rounded-md bg-primary/10 text-primary">
+                    <div className="p-2.5 rounded-md bg-primary/10 text-primary shrink-0">
                       <layer.icon className="h-5 w-5" />
                     </div>
                     <div>
-                      <span className="text-xs font-mono text-muted-foreground">LAYER {i + 1}</span>
+                      <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Layer {String(i + 1).padStart(2, "0")}</span>
                       <h3 className="text-lg font-semibold text-foreground">{layer.title}</h3>
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed md:w-1/3">{layer.desc}</p>
                   <div className="md:w-1/3">
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {layer.details.map((d) => (
-                        <span key={d} className="text-xs font-mono text-muted-foreground bg-secondary/50 px-2 py-1 rounded">{d}</span>
+                        <span key={d} className="text-xs font-mono text-muted-foreground bg-secondary/50 border border-border/50 px-2.5 py-1 rounded">{d}</span>
                       ))}
                     </div>
                   </div>
