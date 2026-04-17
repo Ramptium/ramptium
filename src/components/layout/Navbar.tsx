@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Terminal } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import logo from "@/assets/ramptium-logo.png";
 
 const navItems = [
   { label: "Infrastructure", href: "/infrastructure" },
@@ -19,10 +20,8 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-            <Terminal className="h-4 w-4 text-primary-foreground" />
-          </div>
+        <Link to="/" className="flex items-center gap-2" aria-label="Ramptium home">
+          <img src={logo} alt="Ramptium" width={32} height={32} className="h-8 w-8" />
           <span className="text-lg font-semibold tracking-tight text-foreground">Ramptium</span>
         </Link>
 

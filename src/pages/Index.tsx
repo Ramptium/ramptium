@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 import { motion } from "framer-motion";
 import { ArrowRight, Zap, Globe, Shield, Layers, Activity, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,7 @@ console.log(\`Executed: \${tx.hash}\`);`;
 export default function Index() {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title={"Ramptium — Web3 Infrastructure: Liquidity, Access & Execution"} description={"The infrastructure layer for Web3. Multi-chain RPC access, liquidity routing, and transaction execution with 99.99% uptime across 40+ networks."} keywords={"web3 infrastructure, blockchain API, RPC provider, crypto liquidity routing, multi-chain access"} jsonLd={{"@context":"https://schema.org","@type":"Organization","name":"Ramptium","url":"https://ramptium.lovable.app","description":"Web3 infrastructure layer for liquidity routing, blockchain access, and execution.","logo":"https://ramptium.lovable.app/favicon.png"}} />
       <Navbar />
 
       {/* Hero */}

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
 import { Shield, Lock, Eye, FileCheck, Server, Key } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -18,6 +19,7 @@ const items = [
 export default function Security() {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title={"Security — Enterprise-Grade Web3 Infrastructure | Ramptium"} description={"SOC 2 Type II infrastructure, end-to-end encryption, key rotation, IP allowlisting, and full audit logging. Built for institutions and regulated environments."} keywords={"web3 security, blockchain infrastructure security, SOC 2 RPC provider, API key rotation"} />
       <Navbar />
       <section className="pt-32 pb-16">
         <div className="container">

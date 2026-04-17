@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
 import { Layers, Zap, Globe, Lock, RefreshCw, Cpu } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -48,6 +49,7 @@ const layers = [
 export default function Infrastructure() {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title={"Infrastructure — Six-Layer Web3 Stack | Ramptium"} description={"Vertically integrated Web3 infrastructure: access, routing, execution, liquidity, security, and compute layers. One unified API for every chain."} keywords={"web3 infrastructure stack, RPC routing, blockchain node abstraction, multi-chain architecture"} />
       <Navbar />
       <section className="pt-32 pb-16">
         <div className="container">

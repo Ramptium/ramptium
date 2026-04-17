@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CodeBlock } from "@/components/shared/CodeBlock";
@@ -86,6 +87,7 @@ const endpoints = [
 export default function Docs() {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title={"Developer Docs — SDK & API Reference | Ramptium"} description={"Type-safe SDKs for TypeScript, Python, Rust, and Go. REST, WebSocket, and gRPC endpoints. Full API reference for the Ramptium infrastructure platform."} keywords={"web3 API documentation, blockchain SDK, RPC API, developer docs"} />
       <Navbar />
       <section className="pt-32 pb-16">
         <div className="container">

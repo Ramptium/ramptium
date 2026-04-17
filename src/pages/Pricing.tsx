@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "@/components/SEO";
 import { motion } from "framer-motion";
 import { Check, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -41,6 +42,7 @@ const plans = [
 export default function Pricing() {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title={"Pricing — Usage-Based Web3 Infrastructure | Ramptium"} description={"Transparent, usage-based pricing for Web3 infrastructure. Free tier with 100M requests/month. Growth and Enterprise tiers for production workloads."} keywords={"web3 infrastructure pricing, blockchain API pricing, RPC provider pricing"} />
       <Navbar />
       <section className="pt-32 pb-16">
         <div className="container text-center">
