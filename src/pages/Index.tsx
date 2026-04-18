@@ -79,7 +79,7 @@ export default function Index() {
                   Start Building <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-              <Link to="/docs">
+              <Link to="/developers">
                 <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-secondary">
                   Read the Docs
                 </Button>
