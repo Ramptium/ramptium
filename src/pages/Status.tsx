@@ -107,7 +107,7 @@ export default function Status() {
                     key={i}
                     className={cn(
                       "h-7 w-1.5 rounded-sm",
-                      d === "operational" ? "bg-accent/70" : "bg-yellow-500/70"
+                      d === "operational" ? "bg-accent/70" : "bg-primary/40"
                     )}
                     title={`Day -${90 - i}: ${d}`}
                   />
@@ -129,7 +129,7 @@ export default function Status() {
             {incidents.map((i) => (
               <div key={i.title} className="terminal-border p-5">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5 shrink-0" />
+                  <AlertCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                       <h3 className="text-sm font-medium text-foreground">{i.title}</h3>
