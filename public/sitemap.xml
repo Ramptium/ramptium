@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://ramptium.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://ramptium.com/infrastructure</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ramptium.com/network</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ramptium.com/developers</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ramptium.com/use-cases</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ramptium.com/security</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ramptium.com/pricing</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ramptium.com/for-investors</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ramptium.com/status</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ramptium.com/faq</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ramptium.com/login</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>
