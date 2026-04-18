@@ -84,20 +84,20 @@ const endpoints = [
   { method: "GET", path: "/v1/status", desc: "Network health" },
 ];
 
-export default function Docs() {
+export default function Developers() {
   return (
     <div className="min-h-screen bg-background">
-      <SEO title={"Developer Docs — SDK & API Reference | Ramptium"} description={"Type-safe SDKs for TypeScript, Python, Rust, and Go. REST, WebSocket, and gRPC endpoints. Full API reference for the Ramptium infrastructure platform."} keywords={"web3 API documentation, blockchain SDK, RPC API, developer docs"} />
+      <SEO title={"Developers — SDK, API Reference & Quickstart | Ramptium"} description={"Type-safe SDKs for TypeScript, Python, Rust, and Go. REST, WebSocket, and gRPC endpoints. Generate API keys and integrate Ramptium in minutes."} keywords={"web3 API documentation, blockchain SDK, RPC API, developer docs, web3 quickstart"} />
       <Navbar />
       <section className="pt-32 pb-16">
         <div className="container">
           <motion.div initial="hidden" animate="show" variants={stagger}>
-            <motion.p variants={fade} className="text-xs font-mono text-primary uppercase tracking-widest mb-4">Documentation</motion.p>
+            <motion.p variants={fade} className="text-xs font-mono text-primary uppercase tracking-widest mb-4">Developers</motion.p>
             <motion.h1 variants={fade} className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-              Developer Docs
+              Build on Ramptium
             </motion.h1>
             <motion.p variants={fade} className="mt-4 text-lg text-muted-foreground max-w-2xl">
-              Everything you need to integrate Ramptium into your stack. SDKs, API references, guides, and examples.
+              Generate an API key, point your client at one endpoint, ship to every chain. SDKs, references, and examples below.
             </motion.p>
           </motion.div>
         </div>

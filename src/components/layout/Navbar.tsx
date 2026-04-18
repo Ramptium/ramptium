@@ -7,10 +7,11 @@ import logo from "@/assets/ramptium-logo.png";
 
 const navItems = [
   { label: "Infrastructure", href: "/infrastructure" },
+  { label: "Network", href: "/network" },
+  { label: "Developers", href: "/developers" },
   { label: "Use Cases", href: "/use-cases" },
-  { label: "Docs", href: "/docs" },
-  { label: "Security", href: "/security" },
   { label: "Pricing", href: "/pricing" },
+  { label: "Investors", href: "/for-investors" },
 ];
 
 export function Navbar() {
@@ -25,7 +26,7 @@ export function Navbar() {
           <span className="text-lg font-semibold tracking-tight text-foreground">Ramptium</span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -42,10 +43,10 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
-          <Link to="/dashboard">
+        <div className="hidden lg:flex items-center gap-3">
+          <Link to="/login">
             <Button variant="ghost" size="sm" className="text-muted-foreground">
-              Dashboard
+              Sign in
             </Button>
           </Link>
           <Link to="/dashboard">
@@ -55,14 +56,18 @@ export function Navbar() {
           </Link>
         </div>
 
-        <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
+        <button
+          className="lg:hidden text-foreground"
+          onClick={() => setOpen(!open)}
+          aria-label="Toggle menu"
+        >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
       {open && (
-        <div className="md:hidden border-t border-border bg-background">
-          <div className="container py-4 flex flex-col gap-2">
+        <div className="lg:hidden border-t border-border bg-background">
+          <div className="container py-4 flex flex-col gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -73,6 +78,8 @@ export function Navbar() {
                 {item.label}
               </Link>
             ))}
+            <Link to="/status" onClick={() => setOpen(false)} className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground rounded-md">Status</Link>
+            <Link to="/login" onClick={() => setOpen(false)} className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground rounded-md">Sign in</Link>
             <Link to="/dashboard" onClick={() => setOpen(false)}>
               <Button size="sm" className="w-full mt-2">Get API Key</Button>
             </Link>
