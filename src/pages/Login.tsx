@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ArrowRight, Mail, KeyRound, Github } from "lucide-react";
+import { ArrowRight, Mail, KeyRound, Github as GithubIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
