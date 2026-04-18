@@ -9,6 +9,7 @@ import { TerminalCard } from "@/components/shared/TerminalCard";
 import { MetricCard } from "@/components/shared/MetricCard";
 import { CodeBlock } from "@/components/shared/CodeBlock";
 import { StatusDot } from "@/components/shared/StatusDot";
+import { HeroNetwork } from "@/components/HeroNetwork";
 
 const fade = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 const stagger = { show: { transition: { staggerChildren: 0.1 } } };
@@ -52,12 +53,13 @@ console.log(\`Executed: \${tx.hash}\`);`;
 export default function Index() {
   return (
     <div className="min-h-screen bg-background">
-      <SEO title={"Ramptium — Web3 Infrastructure: Liquidity, Access & Execution"} description={"The infrastructure layer for Web3. Multi-chain RPC access, liquidity routing, and transaction execution with 99.99% uptime across 40+ networks."} keywords={"web3 infrastructure, blockchain API, RPC provider, crypto liquidity routing, multi-chain access"} jsonLd={{"@context":"https://schema.org","@type":"Organization","name":"Ramptium","url":"https://ramptium.lovable.app","description":"Web3 infrastructure layer for liquidity routing, blockchain access, and execution.","logo":"https://ramptium.lovable.app/favicon.png"}} />
+      <SEO title={"Ramptium — Web3 Infrastructure: Liquidity, Access & Execution"} description={"The infrastructure layer for Web3. Multi-chain RPC access, liquidity routing, and transaction execution with 99.99% uptime across 40+ networks."} keywords={"web3 infrastructure, blockchain API, RPC provider, crypto liquidity routing, multi-chain access"} jsonLd={{"@context":"https://schema.org","@type":"Organization","name":"Ramptium","url":"https://ramptium.com","description":"Web3 infrastructure layer for liquidity routing, blockchain access, and execution.","logo":"https://ramptium.com/favicon.png","parentOrganization":{"@type":"Organization","name":"Netlium","url":"https://netlium.co"}}} />
       <Navbar />
 
       {/* Hero */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 grid-pattern opacity-30" />
+        <HeroNetwork className="absolute inset-0 w-full h-full opacity-60" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px]" />
         <div className="container relative">
           <motion.div initial="hidden" animate="show" variants={stagger} className="max-w-3xl">
