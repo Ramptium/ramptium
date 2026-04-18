@@ -8,7 +8,7 @@ interface SEOProps {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const SITE = "https://ramptium.com";
+const SITE = (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/$/, "") || "https://ramptium.com";
 const OG_IMAGE = `${SITE}/ramptium-og.jpg`;
 
 export function SEO({ title, description, keywords, jsonLd }: SEOProps) {
