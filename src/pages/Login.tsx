@@ -71,7 +71,7 @@ export default function Login() {
               </div>
 
               <Button type="button" variant="outline" className="w-full">
-                <Github className="mr-2 h-4 w-4" /> Continue with GitHub
+                <GithubIcon className="mr-2 h-4 w-4" /> Continue with GitHub
               </Button>
               <Button type="button" variant="outline" className="w-full">
                 <KeyRound className="mr-2 h-4 w-4" /> Continue with API Key
