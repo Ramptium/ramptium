@@ -1,6 +1,6 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ArrowRight, Mail, Lock } from "lucide-react";
+import { ArrowRight, Mail, Lock, Building2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
@@ -11,39 +11,46 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/ramptium-logo.png";
 
-export default function Login() {
+export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [company, setCompany] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname || "/dashboard";
-
   useEffect(() => {
-    if (user) navigate(from, { replace: true });
-  }, [user, navigate, from]);
+    if (user) navigate("/dashboard", { replace: true });
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const redirectUrl = `${window.location.origin}/dashboard`;
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: { company, display_name: email.split("@")[0] },
+      },
+    });
     setSubmitting(false);
     if (error) {
-      toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
+      toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
       return;
     }
-    navigate(from, { replace: true });
+    toast({ title: "Workspace created", description: "Check your email if confirmation is required, otherwise you're in." });
+    navigate("/dashboard", { replace: true });
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEO
-        title={"Sign In to the Ramptium Console"}
-        description={"Access your API keys, usage metrics, and request logs. Sign in to the Ramptium developer console."}
-        keywords={"web3 console login, blockchain API sign in, Ramptium developer login"}
+        title={"Create a Ramptium Workspace"}
+        description={"Spin up a Ramptium workspace and start routing requests across multi-chain infrastructure in minutes."}
+        keywords={"web3 signup, blockchain API signup, Ramptium workspace"}
       />
       <div className="grid-pattern absolute inset-0 opacity-20 pointer-events-none" />
       <div className="container flex-1 flex items-center justify-center py-16 relative">
@@ -59,24 +66,23 @@ export default function Login() {
           </Link>
 
           <div className="terminal-border p-8">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Sign in</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Access the developer console.</p>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Create workspace</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Free tier · 100k requests/month included.</p>
 
             <form onSubmit={handleSubmit} className="mt-8 space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                  <Input
-                    id="email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@company.com"
-                    className="pl-9 bg-secondary/30 border-border"
-                  />
+                  <Input id="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" className="pl-9 bg-secondary/30 border-border" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="company" className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Company (optional)</Label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input id="company" type="text" autoComplete="organization" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Acme Labs" className="pl-9 bg-secondary/30 border-border" />
                 </div>
               </div>
 
@@ -84,29 +90,20 @@ export default function Login() {
                 <Label htmlFor="password" className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                  <Input
-                    id="password"
-                    type="password"
-                    required
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="pl-9 bg-secondary/30 border-border"
-                  />
+                  <Input id="password" type="password" required minLength={8} autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" className="pl-9 bg-secondary/30 border-border" />
                 </div>
               </div>
 
               <Button type="submit" disabled={submitting} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-primary">
-                {submitting ? "Signing in…" : <>Sign in <ArrowRight className="ml-2 h-4 w-4" /></>}
+                {submitting ? "Creating workspace…" : <>Create workspace <ArrowRight className="ml-2 h-4 w-4" /></>}
               </Button>
             </form>
           </div>
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
-            New to Ramptium?{" "}
-            <Link to="/signup" className="text-primary hover:text-accent transition-colors">
-              Create a workspace
+            Already have an account?{" "}
+            <Link to="/login" className="text-primary hover:text-accent transition-colors">
+              Sign in
             </Link>
           </p>
         </motion.div>
