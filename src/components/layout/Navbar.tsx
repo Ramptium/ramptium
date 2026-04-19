@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/ramptium-logo.png";
 
 const navItems = [
@@ -17,6 +18,14 @@ const navItems = [
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    setOpen(false);
+    navigate("/");
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
@@ -44,16 +53,31 @@ export function Navbar() {
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
-          <Link to="/login">
-            <Button variant="ghost" size="sm" className="text-muted-foreground">
-              Sign in
-            </Button>
-          </Link>
-          <Link to="/dashboard">
-            <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              Get API Key
-            </Button>
-          </Link>
+          {user ? (
+            <>
+              <Link to="/dashboard">
+                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                  <LayoutDashboard className="h-4 w-4 mr-1.5" /> Dashboard
+                </Button>
+              </Link>
+              <Button onClick={handleSignOut} variant="outline" size="sm">
+                <LogOut className="h-4 w-4 mr-1.5" /> Sign out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                  Sign in
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  Get API Key
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -79,10 +103,21 @@ export function Navbar() {
               </Link>
             ))}
             <Link to="/status" onClick={() => setOpen(false)} className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground rounded-md">Status</Link>
-            <Link to="/login" onClick={() => setOpen(false)} className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground rounded-md">Sign in</Link>
-            <Link to="/dashboard" onClick={() => setOpen(false)}>
-              <Button size="sm" className="w-full mt-2">Get API Key</Button>
-            </Link>
+            {user ? (
+              <>
+                <Link to="/dashboard" onClick={() => setOpen(false)} className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground rounded-md">Dashboard</Link>
+                <Button onClick={handleSignOut} variant="outline" size="sm" className="w-full mt-2">
+                  <LogOut className="h-4 w-4 mr-1.5" /> Sign out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setOpen(false)} className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground rounded-md">Sign in</Link>
+                <Link to="/signup" onClick={() => setOpen(false)}>
+                  <Button size="sm" className="w-full mt-2">Get API Key</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
