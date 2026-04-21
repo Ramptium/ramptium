@@ -46,13 +46,14 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       <SEO
-        title={"Create a Ramptium Workspace"}
-        description={"Spin up a Ramptium workspace and start routing requests across multi-chain infrastructure in minutes."}
-        keywords={"web3 signup, blockchain API signup, Ramptium workspace"}
+        title={"Start building — Create your Ramptium account"}
+        description={"Free forever. No credit card required. Get an API key and start routing requests across every major chain in 60 seconds."}
+        keywords={"web3 signup, blockchain API signup, Ramptium workspace, free rpc"}
       />
-      <div className="grid-pattern absolute inset-0 opacity-20 pointer-events-none" />
+      <div className="grid-pattern absolute inset-0 opacity-30 pointer-events-none" />
+      <div aria-hidden="true" className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/15 blur-[120px] pointer-events-none" />
       <div className="container flex-1 flex items-center justify-center py-16 relative">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -60,14 +61,14 @@ export default function Signup() {
           transition={{ duration: 0.4 }}
           className="w-full max-w-md"
         >
-          <Link to="/" className="flex items-center gap-2 mb-10 justify-center">
-            <img src={logo} alt="Ramptium" width={32} height={32} className="h-8 w-8" />
-            <span className="text-lg font-semibold tracking-tight text-foreground">Ramptium</span>
+          <Link to="/" className="flex items-center gap-2.5 mb-10 justify-center">
+            <img src={logo} alt="Ramptium" width={28} height={28} className="h-7 w-7" />
+            <span className="text-[15px] font-semibold tracking-tight text-foreground">Ramptium</span>
           </Link>
 
-          <div className="terminal-border p-8">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Create workspace</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Free tier · 100k requests/month included.</p>
+          <div className="glass rounded-2xl p-8 shadow-2xl">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Start building</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Free forever. No credit card required.</p>
 
             <form onSubmit={handleSubmit} className="mt-8 space-y-4">
               <div className="space-y-2">
@@ -95,15 +96,18 @@ export default function Signup() {
               </div>
 
               <Button type="submit" disabled={submitting} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-primary">
-                {submitting ? "Creating workspace…" : <>Create workspace <ArrowRight className="ml-2 h-4 w-4" /></>}
+                {submitting ? "Creating account…" : <>Create account <ArrowRight className="ml-2 h-4 w-4" /></>}
               </Button>
             </form>
+            <p className="mt-5 text-xs text-muted-foreground text-center leading-relaxed">
+              By creating an account you agree to our Terms of Service and Privacy Policy.
+            </p>
           </div>
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
             Already have an account?{" "}
             <Link to="/login" className="text-primary hover:text-accent transition-colors">
-              Sign in
+              Sign in →
             </Link>
           </p>
         </motion.div>
