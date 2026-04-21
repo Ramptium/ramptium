@@ -105,9 +105,9 @@ export default function Login() {
           </div>
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
-            New to Ramptium?{" "}
+            Don't have an account?{" "}
             <Link to="/signup" className="text-primary hover:text-accent transition-colors">
-              Create a workspace
+              Start free →
             </Link>
           </p>
         </motion.div>
