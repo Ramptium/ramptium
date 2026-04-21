@@ -26,6 +26,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -43,6 +44,12 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        highlight: {
+          DEFAULT: "hsl(var(--highlight))",
+          foreground: "hsl(var(--highlight-foreground))",
+        },
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -88,6 +95,19 @@ export default {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(100%)" },
         },
+        "fade-in": {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "orb-drift": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(30px, -20px) scale(1.05)" },
+          "66%": { transform: "translate(-20px, 30px) scale(0.95)" },
+        },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -95,6 +115,9 @@ export default {
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "slide-up": "slide-up 0.5s ease-out",
         "data-flow": "data-flow 3s linear infinite",
+        "fade-in": "fade-in 0.5s ease-out",
+        "orb-drift": "orb-drift 18s ease-in-out infinite",
+        "shimmer": "shimmer 3s linear infinite",
       },
     },
   },

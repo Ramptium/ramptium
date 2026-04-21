@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,19 +7,25 @@ import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/ramptium-logo.png";
 
 const navItems = [
-  { label: "Infrastructure", href: "/infrastructure" },
-  { label: "Network", href: "/network" },
-  { label: "Developers", href: "/developers" },
-  { label: "Use Cases", href: "/use-cases" },
+  { label: "Features", href: "/infrastructure" },
   { label: "Pricing", href: "/pricing" },
-  { label: "Investors", href: "/for-investors" },
+  { label: "Docs", href: "/developers" },
+  { label: "Network", href: "/network" },
 ];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const handleSignOut = async () => {
     await signOut();
@@ -28,11 +34,18 @@ export function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
+    <nav
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        scrolled
+          ? "border-b border-border/60 bg-background/70 backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent"
+      )}
+    >
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2" aria-label="Ramptium home">
-          <img src={logo} alt="Ramptium" width={32} height={32} className="h-8 w-8" />
-          <span className="text-lg font-semibold tracking-tight text-foreground">Ramptium</span>
+        <Link to="/" className="flex items-center gap-2.5 group" aria-label="Ramptium home">
+          <img src={logo} alt="Ramptium" width={28} height={28} className="h-7 w-7 transition-transform group-hover:scale-105" />
+          <span className="text-[15px] font-semibold tracking-tight text-foreground">Ramptium</span>
         </Link>
 
         <div className="hidden lg:flex items-center gap-1">
@@ -41,9 +54,9 @@ export function Navbar() {
               key={item.href}
               to={item.href}
               className={cn(
-                "px-3 py-2 text-sm rounded-md transition-colors",
+                "px-3 py-1.5 text-sm rounded-md transition-colors",
                 location.pathname === item.href
-                  ? "text-foreground bg-secondary"
+                  ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -72,8 +85,8 @@ export function Navbar() {
                 </Button>
               </Link>
               <Link to="/signup">
-                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  Get API Key
+                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary">
+                  Start Free
                 </Button>
               </Link>
             </>

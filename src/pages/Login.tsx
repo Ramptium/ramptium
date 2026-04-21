@@ -39,13 +39,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       <SEO
-        title={"Sign In to the Ramptium Console"}
+        title={"Welcome back — Sign in to Ramptium"}
         description={"Access your API keys, usage metrics, and request logs. Sign in to the Ramptium developer console."}
         keywords={"web3 console login, blockchain API sign in, Ramptium developer login"}
       />
-      <div className="grid-pattern absolute inset-0 opacity-20 pointer-events-none" />
+      <div className="grid-pattern absolute inset-0 opacity-30 pointer-events-none" />
+      <div aria-hidden="true" className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/15 blur-[120px] pointer-events-none" />
       <div className="container flex-1 flex items-center justify-center py-16 relative">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -53,14 +54,14 @@ export default function Login() {
           transition={{ duration: 0.4 }}
           className="w-full max-w-md"
         >
-          <Link to="/" className="flex items-center gap-2 mb-10 justify-center">
-            <img src={logo} alt="Ramptium" width={32} height={32} className="h-8 w-8" />
-            <span className="text-lg font-semibold tracking-tight text-foreground">Ramptium</span>
+          <Link to="/" className="flex items-center gap-2.5 mb-10 justify-center group">
+            <img src={logo} alt="Ramptium" width={28} height={28} className="h-7 w-7" />
+            <span className="text-[15px] font-semibold tracking-tight text-foreground">Ramptium</span>
           </Link>
 
-          <div className="terminal-border p-8">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Sign in</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Access the developer console.</p>
+          <div className="glass rounded-2xl p-8 shadow-2xl">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Sign in to your Ramptium account.</p>
 
             <form onSubmit={handleSubmit} className="mt-8 space-y-4">
               <div className="space-y-2">
@@ -104,9 +105,9 @@ export default function Login() {
           </div>
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
-            New to Ramptium?{" "}
+            Don't have an account?{" "}
             <Link to="/signup" className="text-primary hover:text-accent transition-colors">
-              Create a workspace
+              Start free →
             </Link>
           </p>
         </motion.div>
