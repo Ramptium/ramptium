@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SEO } from "@/components/SEO";
 import { motion } from "framer-motion";
-import { Activity, ArrowRight, Key, BarChart3, FileText, Loader2 } from "lucide-react";
+import { Activity, ArrowRight, Key, BarChart3, FileText, Loader2, Zap, Gauge, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
@@ -51,6 +51,13 @@ export default function Dashboard() {
   const [keyCount, setKeyCount] = useState(0);
   const [recentLogs, setRecentLogs] = useState<RecentLog[]>([]);
 
+  const greeting = useMemo(() => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 18) return "Good afternoon";
+    return "Good evening";
+  }, []);
+
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
@@ -87,6 +94,7 @@ export default function Dashboard() {
   const errorRate = totalRequests > 0 ? ((totalErrors / totalRequests) * 100).toFixed(3) : "0.000";
   const quota = subscription?.monthly_request_limit ?? 100_000;
   const quotaPct = Math.min(100, (totalRequests / quota) * 100);
+  const userLabel = user?.email?.split("@")[0] ?? "builder";
 
   return (
     <>
@@ -97,7 +105,7 @@ export default function Dashboard() {
       />
       <DashboardLayout
         title="Overview"
-        description={user?.email ? `Signed in as ${user.email}` : "Workspace overview"}
+        description={user?.email ? `${greeting}, ${userLabel}` : "Workspace overview"}
         eyebrow="Console"
       >
         {loading ? (
@@ -107,10 +115,31 @@ export default function Dashboard() {
         ) : (
           <motion.div initial="hidden" animate="show" variants={stagger} className="space-y-6">
             <motion.div variants={fade} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <MetricCard label="Requests (MTD)" value={formatNumber(totalRequests)} sub={`of ${formatNumber(quota)} quota`} accent />
-              <MetricCard label="Avg Latency" value={`${avgLatency}ms`} sub="across active chains" />
-              <MetricCard label="Error Rate" value={`${errorRate}%`} sub="last 30 days" />
-              <MetricCard label="Active Keys" value={String(keyCount)} sub={subscription ? `${subscription.plan} plan` : "free plan"} />
+              <MetricCard
+                label="Requests (MTD)"
+                value={formatNumber(totalRequests)}
+                sub={`of ${formatNumber(quota)} quota`}
+                accent
+                icon={<Activity className="h-3.5 w-3.5" />}
+              />
+              <MetricCard
+                label="Avg Latency"
+                value={`${avgLatency}ms`}
+                sub="across active chains"
+                icon={<Gauge className="h-3.5 w-3.5" />}
+              />
+              <MetricCard
+                label="Error Rate"
+                value={`${errorRate}%`}
+                sub="last 30 days"
+                icon={<AlertTriangle className="h-3.5 w-3.5" />}
+              />
+              <MetricCard
+                label="Active Keys"
+                value={String(keyCount)}
+                sub={subscription ? `${subscription.plan} plan` : "free plan"}
+                icon={<Key className="h-3.5 w-3.5" />}
+              />
             </motion.div>
 
             <div className="grid lg:grid-cols-2 gap-6">
