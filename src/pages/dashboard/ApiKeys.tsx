@@ -19,6 +19,7 @@ interface ApiKey {
   created_at: string;
   last_used_at: string | null;
   revoked_at: string | null;
+  status?: string;
 }
 
 export default function ApiKeys() {
@@ -37,31 +38,39 @@ export default function ApiKeys() {
     if (!user) return;
     setLoading(true);
     const { data, error } = await supabase
-      .from("api_keys")
-      .select("id,name,key_prefix,environment,created_at,last_used_at,revoked_at")
-      .eq("user_id", user.id)
+      .from("api_keys_v2" as never)
+      .select("id,name,key_prefix,environment,created_at,last_used_at,revoked_at,status")
       .order("created_at", { ascending: false });
-    if (error) toast({ title: "Failed to load keys", description: error.message, variant: "destructive" });
-    setKeys(data ?? []);
+
+    if (error) {
+      toast({ title: "Failed to load keys", description: error.message, variant: "destructive" });
+    }
+
+    setKeys((data as ApiKey[]) ?? []);
     setLoading(false);
   };
 
-  useEffect(() => { loadKeys(); }, [user]);
+  useEffect(() => {
+    loadKeys();
+  }, [user]);
 
   const handleCreate = async () => {
     if (!newName.trim()) {
       toast({ title: "Name required", description: "Give the key a recognizable label.", variant: "destructive" });
       return;
     }
+
     setCreating(true);
     const { data, error } = await supabase.functions.invoke("generate-api-key", {
       body: { name: newName.trim(), environment: newEnv },
     });
     setCreating(false);
+
     if (error || !data?.full_key) {
       toast({ title: "Could not create key", description: error?.message ?? "Unknown error", variant: "destructive" });
       return;
     }
+
     setRevealedKey(data.full_key);
     setShowCreate(false);
     setNewName("");
@@ -69,11 +78,16 @@ export default function ApiKeys() {
   };
 
   const handleRevoke = async (id: string) => {
-    const { error } = await supabase.from("api_keys").update({ revoked_at: new Date().toISOString() }).eq("id", id);
+    const { error } = await supabase
+      .from("api_keys_v2" as never)
+      .update({ revoked_at: new Date().toISOString(), status: "revoked" } as never)
+      .eq("id", id);
+
     if (error) {
       toast({ title: "Revoke failed", description: error.message, variant: "destructive" });
       return;
     }
+
     toast({ title: "Key revoked", description: "It can no longer authenticate requests." });
     loadKeys();
   };
@@ -108,7 +122,7 @@ export default function ApiKeys() {
         ) : (
           <div className="space-y-4">
             {keys.map((k) => {
-              const revoked = !!k.revoked_at;
+              const revoked = !!k.revoked_at || k.status === "revoked";
               return (
                 <motion.div
                   key={k.id}
@@ -151,7 +165,6 @@ export default function ApiKeys() {
           </div>
         )}
 
-        {/* Create dialog */}
         <Dialog open={showCreate} onOpenChange={setShowCreate}>
           <DialogContent>
             <DialogHeader>
@@ -190,7 +203,6 @@ export default function ApiKeys() {
           </DialogContent>
         </Dialog>
 
-        {/* Reveal once dialog */}
         <Dialog open={!!revealedKey} onOpenChange={(o) => !o && setRevealedKey(null)}>
           <DialogContent>
             <DialogHeader>
