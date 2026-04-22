@@ -3,7 +3,7 @@ import { getHealthForEndpoints } from '@/backend/repositories/endpointHealthRepo
 import { selectCandidateEndpoints } from './selectCandidateEndpoints'
 import type { RoutingContext, RoutingResult } from '@/backend/contracts/routing'
 
-export async function routeRpcRequest(ctx: RoutingContext): Promise<RoutingResult> {
+export async function routeRpcRequest(ctx: RoutingContext, payload: unknown): Promise<RoutingResult> {
   const endpoints = await listActiveEndpointsByChainNetwork(ctx.chain, ctx.network)
 
   const endpointIds = endpoints.map((e) => e.id)
@@ -26,14 +26,20 @@ export async function routeRpcRequest(ctx: RoutingContext): Promise<RoutingResul
   for (let i = 0; i < Math.min(ctx.maxAttempts, candidates.length); i++) {
     const endpoint = candidates[i]
 
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), ctx.timeoutMs)
+
     const start = Date.now()
 
     try {
       const res = await fetch(endpoint.endpoint_url, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ jsonrpc: '2.0', method: ctx.method, params: [], id: 1 }),
+        body: JSON.stringify(payload),
+        signal: controller.signal,
       })
+
+      clearTimeout(timeout)
 
       const latency = Date.now() - start
 
@@ -60,11 +66,13 @@ export async function routeRpcRequest(ctx: RoutingContext): Promise<RoutingResul
         }
       }
     } catch (e) {
+      clearTimeout(timeout)
+
       attempts.push({
         attemptNumber: i + 1,
         endpointId: endpoint.id,
         providerName: endpoint.provider_name,
-        outcome: 'network_error',
+        outcome: 'timeout',
       })
     }
   }
