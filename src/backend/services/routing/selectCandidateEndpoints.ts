@@ -1,15 +1,22 @@
 import type { RpcEndpointRecord } from '@/backend/repositories/rpcEndpointsRepo'
 import type { EndpointHealthRecord } from '@/backend/repositories/endpointHealthRepo'
 import { scoreEndpoints } from './scoreEndpoints'
+import { getEndpointRuntimeState } from './routingState'
 
 export function selectCandidateEndpoints(
   endpoints: RpcEndpointRecord[],
   health: EndpointHealthRecord[],
 ) {
-  const healthyEndpoints = endpoints.filter((endpoint) => {
-    const h = health.find((x) => x.endpoint_id === endpoint.id)
-    return !h || h.circuit_state !== 'open'
+  const filtered = endpoints.filter((endpoint) => {
+    const dbHealth = health.find((x) => x.endpoint_id === endpoint.id)
+    const runtime = getEndpointRuntimeState(endpoint.id)
+
+    if (runtime.circuitState === 'open') return false
+    if (dbHealth?.circuit_state === 'open') return false
+    if (dbHealth?.health_status === 'unhealthy') return false
+
+    return true
   })
 
-  return scoreEndpoints(healthyEndpoints, health).map((e) => e.endpoint)
+  return scoreEndpoints(filtered, health).map((e) => e.endpoint)
 }
