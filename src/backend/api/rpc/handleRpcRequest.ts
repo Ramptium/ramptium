@@ -4,8 +4,10 @@ import { resolveApiKey } from '@/backend/services/auth/resolveApiKey'
 import { validateRpcRequest } from '@/backend/services/validation/validateRpcRequest'
 import { evaluateRateLimit } from '@/backend/services/rateLimit/evaluateRateLimit'
 import { buildRoutingContext } from '@/backend/services/routing/buildRoutingContext'
+import { routeRpcRequest } from '@/backend/services/routing/routeRpcRequest'
 import { writeRequestEvent } from '@/backend/services/requestEvents/writeRequestEvent'
 import { updateUsageAggregates } from '@/backend/services/usage/updateUsageAggregates'
+import { insertRoutingAttempts } from '@/backend/repositories/routingAttemptsRepo'
 
 export async function handleRpcRequest(req: Request, chain: string) {
   const requestId = generateRequestId()
@@ -47,13 +49,7 @@ export async function handleRpcRequest(req: Request, chain: string) {
     method: validation.normalizedMethod!,
   })
 
-  // v1 routing placeholder
-  const routingResult = {
-    finalStatusCode: 200,
-    latencyMs: 0,
-    retryCount: 0,
-    attempts: [],
-  }
+  const routingResult = await routeRpcRequest(routingContext, body)
 
   const event = await writeRequestEvent({
     requestId,
@@ -63,20 +59,29 @@ export async function handleRpcRequest(req: Request, chain: string) {
     network: routingContext.network,
     method: routingContext.method,
     responseStatus: routingResult.finalStatusCode,
+    upstreamStatus: routingResult.upstreamStatusCode,
+    providerName: routingResult.providerName,
+    endpointId: routingResult.endpointId,
+    latencyMs: routingResult.latencyMs,
     retryCount: routingResult.retryCount,
+    errorClass: routingResult.errorClass,
     billableUnits: rate.costUnits,
-    billable: true,
+    billable: routingResult.finalStatusCode === 200,
   })
+
+  await insertRoutingAttempts(event.requestEventId, routingResult.attempts)
 
   await updateUsageAggregates({
     projectId: auth.context.projectId,
     apiKeyId: auth.context.apiKeyId,
     chain,
     requestCount: 1,
-    successCount: 1,
-    errorCount: 0,
+    successCount: routingResult.finalStatusCode === 200 ? 1 : 0,
+    errorCount: routingResult.finalStatusCode !== 200 ? 1 : 0,
     billableUnits: event.billableUnits,
   })
 
-  return new Response(JSON.stringify({ result: 'ok', requestId }), { status: 200 })
+  return new Response(JSON.stringify(routingResult.responseBody ?? { error: 'upstream failure', requestId }), {
+    status: routingResult.finalStatusCode,
+  })
 }
