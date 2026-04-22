@@ -9,10 +9,11 @@ import { cn } from "@/lib/utils";
 
 interface LogRow {
   id: string;
-  method: string;
-  chain: string;
-  status_code: number;
+  rpc_method: string;
+  response_status: number;
   latency_ms: number;
+  retry_count: number;
+  upstream_provider: string | null;
   created_at: string;
 }
 
@@ -24,26 +25,26 @@ export default function Logs() {
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
+
     (async () => {
       setLoading(true);
       const { data } = await supabase
-        .from("rpc_logs")
-        .select("id,method,chain,status_code,latency_ms,created_at")
-        .eq("user_id", user.id)
+        .from("request_events" as never)
+        .select("id,rpc_method,response_status,latency_ms,retry_count,upstream_provider,created_at")
         .order("created_at", { ascending: false })
         .limit(200);
+
       if (!cancelled) {
-        setLogs(data ?? []);
+        setLogs((data as LogRow[]) ?? []);
         setLoading(false);
       }
     })();
 
-    // Realtime subscription
     const channel = supabase
-      .channel("rpc_logs_stream")
+      .channel("request_events_stream")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "rpc_logs", filter: `user_id=eq.${user.id}` },
+        { event: "INSERT", schema: "public", table: "request_events" },
         (payload) => {
           setLogs((prev) => [payload.new as LogRow, ...prev].slice(0, 200));
         }
@@ -58,7 +59,7 @@ export default function Logs() {
 
   return (
     <>
-      <SEO title={"Request Logs — Console | Ramptium"} description={"Real-time request logs with method, chain, status, and latency for every API call."} />
+      <SEO title={"Request Logs — Console | Ramptium"} description={"Real-time request logs with method, provider, status, retry count, and latency for every API call."} />
       <DashboardLayout title="Logs" description="Live request stream from your workspace." eyebrow="Console / Logs">
         <TerminalCard title="request-stream" bodyClassName="p-0">
           {loading ? (
@@ -73,23 +74,25 @@ export default function Logs() {
             </div>
           ) : (
             <>
-              <div className="hidden md:grid grid-cols-[1fr_0.6fr_2fr_1fr_0.6fr] gap-4 px-4 py-2.5 border-b border-border bg-secondary/30 text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+              <div className="hidden md:grid grid-cols-[1fr_0.6fr_2fr_1fr_0.6fr_0.8fr] gap-4 px-4 py-2.5 border-b border-border bg-secondary/30 text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
                 <span>Time</span>
                 <span>Status</span>
                 <span>Method</span>
-                <span>Chain</span>
+                <span>Provider</span>
+                <span>Retries</span>
                 <span className="text-right">Latency</span>
               </div>
               <div className="divide-y divide-border max-h-[640px] overflow-y-auto">
                 {logs.map((log) => (
-                  <div key={log.id} className="grid grid-cols-[1fr_0.6fr_2fr_1fr_0.6fr] gap-4 items-center text-xs font-mono px-4 py-2.5 hover:bg-secondary/30 transition-colors">
+                  <div key={log.id} className="grid grid-cols-[1fr_0.6fr_2fr_1fr_0.6fr_0.8fr] gap-4 items-center text-xs font-mono px-4 py-2.5 hover:bg-secondary/30 transition-colors">
                     <span className="text-muted-foreground truncate">
                       {new Date(log.created_at).toLocaleTimeString([], { hour12: false })}.{String(new Date(log.created_at).getMilliseconds()).padStart(3, "0")}
                     </span>
-                    <span className={cn("font-semibold", log.status_code < 400 ? "text-accent" : "text-destructive")}>{log.status_code}</span>
-                    <span className="text-foreground truncate">{log.method}</span>
-                    <span className="text-muted-foreground truncate">{log.chain}</span>
-                    <span className="text-primary text-right">{log.latency_ms}ms</span>
+                    <span className={cn("font-semibold", log.response_status < 400 ? "text-accent" : "text-destructive")}>{log.response_status}</span>
+                    <span className="text-foreground truncate">{log.rpc_method}</span>
+                    <span className="text-muted-foreground truncate">{log.upstream_provider ?? "n/a"}</span>
+                    <span className="text-muted-foreground truncate">{log.retry_count}</span>
+                    <span className="text-primary text-right">{log.latency_ms ?? 0}ms</span>
                   </div>
                 ))}
               </div>
