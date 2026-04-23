@@ -1,105 +1,184 @@
-import { useEffect, useState } from "react";
-import { Loader2, FileText } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Loader2, BarChart3 } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { TerminalCard } from "@/components/shared/TerminalCard";
+import { MetricCard } from "@/components/shared/MetricCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { cn } from "@/lib/utils";
 
-interface LogRow {
-  id: string;
-  rpc_method: string;
-  response_status: number;
-  latency_ms: number;
-  retry_count: number;
-  upstream_provider: string | null;
-  created_at: string;
+interface UsageRow {
+  date: string;
+  request_count: number;
+  success_count: number;
+  error_count: number;
+  billable_units: number;
+  latency_p50: number | null;
 }
 
-export default function Logs() {
+function formatNumber(n: number): string {
+  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(2)}B`;
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return `${n}`;
+}
+
+export default function Usage() {
   const { user } = useAuth();
-  const [logs, setLogs] = useState<LogRow[]>([]);
+  const [rows, setRows] = useState<UsageRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
+
     let cancelled = false;
 
     (async () => {
       setLoading(true);
-      const { data } = await supabase
-        .from("request_events" as never)
-        .select("id,rpc_method,response_status,latency_ms,retry_count,upstream_provider,created_at")
-        .order("created_at", { ascending: false })
-        .limit(200);
+      setError(null);
 
-      if (!cancelled) {
-        setLogs((data as LogRow[]) ?? []);
-        setLoading(false);
+      const { data, error } = await supabase
+        .from("usage_aggregates_daily" as never)
+        .select(
+          "date, request_count, success_count, error_count, billable_units, latency_p50"
+        )
+        .order("date", { ascending: false });
+
+      if (cancelled) return;
+
+      if (error) {
+        setError(error.message);
+        setRows([]);
+      } else {
+        setRows((data as UsageRow[]) ?? []);
       }
-    })();
 
-    const channel = supabase
-      .channel("request_events_stream")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "request_events" },
-        (payload) => {
-          setLogs((prev) => [payload.new as LogRow, ...prev].slice(0, 200));
-        }
-      )
-      .subscribe();
+      setLoading(false);
+    })();
 
     return () => {
       cancelled = true;
-      supabase.removeChannel(channel);
     };
   }, [user]);
 
+  const summary = useMemo(() => {
+    const totalRequests = rows.reduce((sum, row) => sum + (row.request_count ?? 0), 0);
+    const totalSuccess = rows.reduce((sum, row) => sum + (row.success_count ?? 0), 0);
+    const totalErrors = rows.reduce((sum, row) => sum + (row.error_count ?? 0), 0);
+    const totalBillable = rows.reduce((sum, row) => sum + (row.billable_units ?? 0), 0);
+
+    const latencyRows = rows.filter((row) => typeof row.latency_p50 === "number");
+    const avgLatencyP50 =
+      latencyRows.length > 0
+        ? Math.round(
+            latencyRows.reduce((sum, row) => sum + (row.latency_p50 ?? 0), 0) /
+              latencyRows.length
+          )
+        : 0;
+
+    const errorRate =
+      totalRequests > 0 ? ((totalErrors / totalRequests) * 100).toFixed(2) : "0.00";
+
+    return {
+      totalRequests,
+      totalSuccess,
+      totalErrors,
+      totalBillable,
+      avgLatencyP50,
+      errorRate,
+    };
+  }, [rows]);
+
   return (
     <>
-      <SEO title={"Request Logs — Console | Ramptium"} description={"Real-time request logs with method, provider, status, retry count, and latency for every API call."} />
-      <DashboardLayout title="Logs" description="Live request stream from your workspace." eyebrow="Console / Logs">
-        <TerminalCard title="request-stream" bodyClassName="p-0">
-          {loading ? (
-            <div className="flex items-center justify-center py-24">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+      <SEO
+        title="Usage — Ramptium"
+        description="Daily infrastructure metrics including requests, success rate, latency, and billable units."
+      />
+
+      <DashboardLayout
+        title="Usage"
+        description="Daily infrastructure metrics"
+        eyebrow="Console / Usage"
+      >
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          </div>
+        ) : error ? (
+          <TerminalCard title="usage-error">
+            <p className="text-sm text-destructive">{error}</p>
+          </TerminalCard>
+        ) : (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <MetricCard
+                label="Total Requests"
+                value={formatNumber(summary.totalRequests)}
+                sub="from daily aggregates"
+                accent
+              />
+              <MetricCard
+                label="Successful"
+                value={formatNumber(summary.totalSuccess)}
+                sub={`${summary.errorRate}% error rate`}
+              />
+              <MetricCard
+                label="Avg p50 Latency"
+                value={`${summary.avgLatencyP50}ms`}
+                sub="daily average"
+              />
+              <MetricCard
+                label="Billable Units"
+                value={formatNumber(summary.totalBillable)}
+                sub="current period"
+              />
             </div>
-          ) : logs.length === 0 ? (
-            <div className="py-16 text-center">
-              <FileText className="h-8 w-8 text-muted-foreground/40 mx-auto mb-3" />
-              <p className="text-sm text-foreground">No logs yet</p>
-              <p className="text-xs text-muted-foreground mt-1">Requests routed through Ramptium will stream here in real time.</p>
-            </div>
-          ) : (
-            <>
-              <div className="hidden md:grid grid-cols-[1fr_0.6fr_2fr_1fr_0.6fr_0.8fr] gap-4 px-4 py-2.5 border-b border-border bg-secondary/30 text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
-                <span>Time</span>
-                <span>Status</span>
-                <span>Method</span>
-                <span>Provider</span>
-                <span>Retries</span>
-                <span className="text-right">Latency</span>
-              </div>
-              <div className="divide-y divide-border max-h-[640px] overflow-y-auto">
-                {logs.map((log) => (
-                  <div key={log.id} className="grid grid-cols-[1fr_0.6fr_2fr_1fr_0.6fr_0.8fr] gap-4 items-center text-xs font-mono px-4 py-2.5 hover:bg-secondary/30 transition-colors">
-                    <span className="text-muted-foreground truncate">
-                      {new Date(log.created_at).toLocaleTimeString([], { hour12: false })}.{String(new Date(log.created_at).getMilliseconds()).padStart(3, "0")}
-                    </span>
-                    <span className={cn("font-semibold", log.response_status < 400 ? "text-accent" : "text-destructive")}>{log.response_status}</span>
-                    <span className="text-foreground truncate">{log.rpc_method}</span>
-                    <span className="text-muted-foreground truncate">{log.upstream_provider ?? "n/a"}</span>
-                    <span className="text-muted-foreground truncate">{log.retry_count}</span>
-                    <span className="text-primary text-right">{log.latency_ms ?? 0}ms</span>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </TerminalCard>
+
+            <TerminalCard title="usage-by-day">
+              {rows.length === 0 ? (
+                <div className="py-12 text-center">
+                  <BarChart3 className="h-8 w-8 text-muted-foreground/40 mx-auto mb-3" />
+                  <p className="text-sm text-foreground">No usage data yet</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Request activity will appear here once traffic starts flowing.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {rows.map((row) => {
+                    const errorRate = row.request_count
+                      ? (row.error_count / row.request_count) * 100
+                      : 0;
+
+                    return (
+                      <div key={row.date} className="terminal-border p-4">
+                        <div className="flex items-center justify-between gap-4">
+                          <span className="font-mono text-sm text-foreground">
+                            {row.date}
+                          </span>
+                          <span className="font-mono text-primary">
+                            {formatNumber(row.request_count)} req
+                          </span>
+                        </div>
+
+                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                          <span>Success: {formatNumber(row.success_count)}</span>
+                          <span>Errors: {formatNumber(row.error_count)}</span>
+                          <span>Error rate: {errorRate.toFixed(2)}%</span>
+                          <span>Latency p50: {row.latency_p50 ?? 0}ms</span>
+                          <span>Billable: {formatNumber(row.billable_units)}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </TerminalCard>
+          </div>
+        )}
       </DashboardLayout>
     </>
   );
-}
+  }
