@@ -7,10 +7,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/ramptium-logo.png";
 
 const navItems = [
-  { label: "Features", href: "/infrastructure" },
+  { label: "Platform", href: "/infrastructure" },
   { label: "Pricing", href: "/pricing" },
   { label: "Docs", href: "/developers" },
-  { label: "Network", href: "/network" },
+  { label: "Status", href: "/status" },
 ];
 
 export function Navbar() {
@@ -38,7 +38,7 @@ export function Navbar() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
-          ? "border-b border-border/60 bg-background/70 backdrop-blur-xl"
+          ? "border-b border-border/60 bg-background/75 backdrop-blur-xl"
           : "border-b border-transparent bg-transparent"
       )}
     >
@@ -84,9 +84,9 @@ export function Navbar() {
                   Sign in
                 </Button>
               </Link>
-              <Link to="/signup">
+              <Link to="/dashboard">
                 <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary">
-                  Start Free
+                  Open app
                 </Button>
               </Link>
             </>
@@ -115,7 +115,6 @@ export function Navbar() {
                 {item.label}
               </Link>
             ))}
-            <Link to="/status" onClick={() => setOpen(false)} className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground rounded-md">Status</Link>
             {user ? (
               <>
                 <Link to="/dashboard" onClick={() => setOpen(false)} className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground rounded-md">Dashboard</Link>
@@ -126,8 +125,8 @@ export function Navbar() {
             ) : (
               <>
                 <Link to="/login" onClick={() => setOpen(false)} className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground rounded-md">Sign in</Link>
-                <Link to="/signup" onClick={() => setOpen(false)}>
-                  <Button size="sm" className="w-full mt-2">Get API Key</Button>
+                <Link to="/dashboard" onClick={() => setOpen(false)}>
+                  <Button size="sm" className="w-full mt-2">Open app</Button>
                 </Link>
               </>
             )}
