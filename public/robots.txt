@@ -3,5 +3,6 @@ Allow: /
 Disallow: /dashboard
 Disallow: /login
 Disallow: /signup
+Disallow: /api
 
 Sitemap: https://ramptium.com/sitemap.xml
