@@ -8,6 +8,7 @@ import { routeRpcRequest } from '@/backend/services/routing/routeRpcRequest'
 import { writeRequestEvent } from '@/backend/services/requestEvents/writeRequestEvent'
 import { updateUsageAggregates } from '@/backend/services/usage/updateUsageAggregates'
 import { insertRoutingAttempts } from '@/backend/repositories/routingAttemptsRepo'
+import { enforceBillingQuota } from '@/backend/services/billing/enforceBillingQuota'
 
 export async function handleRpcRequest(req: Request, chain: string) {
   const requestId = generateRequestId()
@@ -19,6 +20,14 @@ export async function handleRpcRequest(req: Request, chain: string) {
   const auth = await resolveApiKey(rawKey)
   if (!auth.ok) {
     return new Response(JSON.stringify({ error: auth.reason, requestId }), { status: 401 })
+  }
+
+  const billing = await enforceBillingQuota(auth.context.projectId)
+  if (!billing.allowed) {
+    return new Response(
+      JSON.stringify({ error: billing.reason || 'quota_exceeded', requestId }),
+      { status: 402 }
+    )
   }
 
   const body = await req.json()
